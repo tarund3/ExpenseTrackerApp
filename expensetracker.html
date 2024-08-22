@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chart {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Expense Tracker</h1>
+
+    <div>
+        <label for="description">Description:</label>
+        <input type="text" id="description" placeholder="Expense description">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" placeholder="Amount" min="0">
+        <button id="add-expense">Add Expense</button>
+    </div>
+
+    <div class="chart"></div>
+
+    <script>
+        const expenses = [];
+
+        function updateChart() {
+            const svgWidth = 600;
+            const svgHeight = 300;
+            const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+            const width = svgWidth - margin.left - margin.right;
+            const height = svgHeight - margin.top - margin.bottom;
+
+            // Clear any existing SVG content before drawing a new chart
+            d3.select('.chart').selectAll('*').remove();
+
+            const svg = d3.select('.chart')
+                .append('svg')
+                .attr('width', svgWidth)
+                .attr('height', svgHeight)
+                .append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleBand()
+                .domain(expenses.map(d => d.description))
+                .range([0, width])
+                .padding(0.2);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(expenses, d => d.amount)])
+                .range([height, 0]);
+
+            svg.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+
+            svg.append('g')
+                .call(d3.axisLeft(yScale));
+
+            svg.selectAll('.bar')
+                .data(expenses)
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                .attr('x', d => xScale(d.description))
+                .attr('y', d => yScale(d.amount))
+                .attr('width', xScale.bandwidth())
+                .attr('height', d => height - yScale(d.amount))
+                .attr('fill', 'steelblue');
+        }
+
+        document.getElementById('add-expense').addEventListener('click', () => {
+            const description = document.getElementById('description').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (description && !isNaN(amount)) {
+                expenses.push({ description, amount });
+                updateChart();
+            }
+        });
+
+        // Initialize the chart with empty data
+        updateChart();
+    </script>
+</body>
+</html>
