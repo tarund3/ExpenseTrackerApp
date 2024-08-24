@@ -30,3 +30,7 @@ To run this project locally, you'll need:
 
    ```bash
    git clone https://github.com/your-username/expense-tracker-app.git
+
+
+https://github.com/user-attachments/assets/437c7c63-f559-4e9c-bd7c-32d4ce2eefac
+
